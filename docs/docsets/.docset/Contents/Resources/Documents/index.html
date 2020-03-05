@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>  Reference</title>
+    <link rel="stylesheet" type="text/css" href="css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="css/highlight.css" />
+    <meta charset='utf-8'>
+    <script src="js/jquery.min.js" defer></script>
+    <script src="js/jazzy.js" defer></script>
+    
+  </head>
+  <body>
+    <a title="  Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p><a href="index.html"> Docs</a> (100% documented)</p>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <p id="breadcrumbs">
+        <a href="index.html"> Reference</a>
+        <img id="carat" src="img/carat.png" />
+          Reference
+      </p>
+    </div>
+    <div class="content-wrapper">
+      <nav class="sidebar">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+            <a href="Enums.html">Enumerations</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Enums/FaceTemplateConversionError.html">FaceTemplateConversionError</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="Structs.html">Structures</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Structs/FaceTemplateUtility.html">FaceTemplateUtility</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+        <section>
+          <section class="section">
+            
+            <h1 id='face-template-utility' class='heading'>Face Template Utility</h1>
+<h3 id='utility-for-converting-and-comparing-raw-a-href-https-github-com-appliedrecognition-ver-id-ui-ios-ver-id-a-face-templates' class='heading'>Utility for converting and comparing raw <a href="https://github.com/AppliedRecognition/Ver-ID-UI-iOS">Ver-ID</a> face templates</h3>
+<h2 id='obtaining-a-raw-face-template' class='heading'>Obtaining a raw face template</h2>
+
+<ol>
+<li><a href="https://github.com/AppliedRecognition/Ver-ID-UI-iOS">Follow the instructions</a> to install Ver-ID SDK for iOS.</li>
+<li><p>Example function to detect a face and get its raw template:</p>
+<pre class="highlight swift"><code><span class="kd">import</span> <span class="kt">VerIDCore</span>
+
+<span class="kd">func</span> <span class="nf">rawFaceTemplateFromImage</span><span class="p">(</span><span class="nv">url</span><span class="p">:</span> <span class="kt">URL</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="kt">Float</span><span class="p">]?</span> <span class="p">{</span>
+    <span class="k">let</span> <span class="nv">verid</span> <span class="o">=</span> <span class="kt">VerIDFactory</span><span class="p">()</span><span class="o">.</span><span class="nf">createVerIDSync</span><span class="p">()</span>
+    <span class="k">guard</span> <span class="k">let</span> <span class="nv">face</span> <span class="o">=</span> <span class="p">(</span><span class="k">try</span><span class="p">?</span> <span class="n">verid</span><span class="o">.</span><span class="n">faceDetection</span><span class="o">.</span><span class="nf">detectRecognizableFacesInImage</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="nv">limit</span><span class="p">:</span> <span class="mi">1</span><span class="p">))?</span><span class="o">.</span><span class="n">first</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="c1">// No face found in image</span>
+        <span class="k">return</span> <span class="kc">nil</span>
+    <span class="p">}</span>
+    <span class="k">guard</span> <span class="k">let</span> <span class="nv">faceRecognition</span> <span class="o">=</span> <span class="n">verid</span><span class="o">.</span><span class="n">faceRecognition</span> <span class="k">as?</span> <span class="kt">VerIDFaceRecognition</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="c1">// Not using Ver-ID face recognition</span>
+        <span class="k">return</span> <span class="kc">nil</span>
+    <span class="p">}</span>
+    <span class="k">guard</span> <span class="k">let</span> <span class="nv">template</span> <span class="o">=</span> <span class="k">try</span><span class="p">?</span> <span class="n">faceRecognition</span><span class="o">.</span><span class="nf">rawFaceTemplate</span><span class="p">(</span><span class="nv">fromFace</span><span class="p">:</span> <span class="n">face</span><span class="p">)</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="c1">// Failed to get raw template</span>
+        <span class="k">return</span> <span class="kc">nil</span>
+    <span class="p">}</span>
+    <span class="c1">// Convert from [NSNumber] to [Float]</span>
+    <span class="k">return</span> <span class="n">template</span><span class="o">.</span><span class="nf">map</span><span class="p">({</span> <span class="nv">$0</span><span class="o">.</span><span class="n">floatValue</span> <span class="p">})</span>
+<span class="p">}</span>
+</code></pre></li>
+</ol>
+<h2 id='converting-face-templates-to-strings' class='heading'>Converting face templates to strings</h2>
+
+<p>If you&rsquo;re going to be storing raw face templates you may want to convert them to strings.</p>
+
+<ol>
+<li><p>Convert face template to string:</p>
+<pre class="highlight swift"><code><span class="kd">import</span> <span class="kt">FaceTemplateUtility</span>
+
+<span class="k">let</span> <span class="nv">string</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="kt">FaceTemplateUtility</span><span class="o">.</span><span class="nf">stringFromFaceTemplate</span><span class="p">(</span><span class="n">template</span><span class="p">)</span>
+</code></pre></li>
+<li><p>Convert string to face template:</p>
+<pre class="highlight swift"><code><span class="kd">import</span> <span class="kt">FaceTemplateUtility</span>
+
+<span class="k">do</span> <span class="p">{</span>
+    <span class="k">let</span> <span class="nv">faceTemplate</span><span class="p">:</span> <span class="p">[</span><span class="kt">Float</span><span class="p">]</span> <span class="o">=</span> <span class="k">try</span> <span class="kt">FaceTemplateUtility</span><span class="o">.</span><span class="nf">faceTemplateFromString</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+<span class="p">}</span> <span class="k">catch</span> <span class="p">{</span>
+    <span class="c1">// Conversion failed</span>
+<span class="p">}</span>
+</code></pre></li>
+</ol>
+<h2 id='comparing-face-templates' class='heading'>Comparing face templates</h2>
+<pre class="highlight swift"><code><span class="kd">import</span> <span class="kt">FaceTemplateUtility</span>
+
+<span class="kd">func</span> <span class="nf">isFaceTemplate</span><span class="p">(</span><span class="n">_</span> <span class="nv">template1</span><span class="p">:</span> <span class="p">[</span><span class="kt">Float</span><span class="p">],</span> <span class="n">similarTo</span> <span class="nv">template2</span><span class="p">:</span> <span class="p">[</span><span class="kt">Float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kt">Bool</span> <span class="p">{</span>
+    <span class="k">let</span> <span class="nv">score</span><span class="p">:</span> <span class="kt">Float</span> <span class="o">=</span> <span class="kt">FaceTemplateUtility</span><span class="o">.</span><span class="nf">compareFaceTemplate</span><span class="p">(</span><span class="n">template1</span><span class="p">,</span> <span class="nv">to</span><span class="p">:</span> <span class="n">template2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">score</span> <span class="o">&gt;</span> <span class="mf">0.5</span>
+<span class="p">}</span>
+</code></pre>
+<h2 id='a-href-https-appliedrecognition-github-io-face-template-utility-apple-reference-documentation-a' class='heading'><a href="https://appliedrecognition.github.io/Face-Template-Utility-Apple">Reference documentation</a></h2>
+
+          </section>
+        </section>
+        <section id="footer">
+          <p>&copy; 2020 <a class="link" href="" target="_blank" rel="external"></a>. All rights reserved. (Last updated: 2020-03-05)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.13.1</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+        </section>
+      </article>
+    </div>
+  </body>
+</div>
+</html>
