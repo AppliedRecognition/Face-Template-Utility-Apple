@@ -60,8 +60,9 @@ If you're going to be storing raw face templates you may want to convert them to
 import FaceTemplateUtility
 
 func isFaceTemplate(_ template1: [Float], similarTo template2: [Float]) -> Bool {
+    let threshold: Float = 4.0
     let score: Float = FaceTemplateUtility.compareFaceTemplate(template1, to: template2)
-    return score > 0.5
+    return score > threshold
 }
 ~~~
 

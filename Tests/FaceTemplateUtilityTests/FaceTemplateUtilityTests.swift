@@ -14,6 +14,8 @@ final class FaceTemplateUtilityTests: XCTestCase {
         ]
     ]
     
+    let similarityThreshold: Float = 4.0
+    
     // MARK: - Face template conversion tests
     
     func test_convertStringToFaceTemplate_succeeds() {
@@ -43,7 +45,7 @@ final class FaceTemplateUtilityTests: XCTestCase {
         userFaceTemplates.forEach({
             for i in 0..<$0.count-1 {
                 let score = FaceTemplateUtility.compareFaceTemplate($0[i].1, to: $0[i+1].1)
-                XCTAssertGreaterThanOrEqual(score, 0.5)
+                XCTAssertGreaterThanOrEqual(score, self.similarityThreshold)
             }
         })
     }
@@ -55,7 +57,7 @@ final class FaceTemplateUtilityTests: XCTestCase {
             user1Templates.forEach({ template1 in
                 user2Templates.forEach({ template2 in
                     let score = FaceTemplateUtility.compareFaceTemplate(template1.1, to: template2.1)
-                    XCTAssertLessThan(score, 0.5)
+                    XCTAssertLessThan(score, self.similarityThreshold)
                 })
             })
         }
@@ -75,6 +77,17 @@ final class FaceTemplateUtilityTests: XCTestCase {
         let norm = FaceTemplateUtility.normForTemplate(template)
         XCTAssertNotEqual(1, norm, accuracy: 0.0001)
     }
+    
+    func test_compareSameUserWithTemplateNorms_returnsHighScore() {
+        userFaceTemplates.forEach({
+            for i in 0..<$0.count-1 {
+                let norm1 = FaceTemplateUtility.normForTemplate($0[i].1)
+                let norm2 = FaceTemplateUtility.normForTemplate($0[i+1].1)
+                let score = FaceTemplateUtility.compareFaceTemplate($0[i].1, withNorm: norm1, to: $0[i+1].1, withNorm: norm2)
+                XCTAssertGreaterThanOrEqual(score, self.similarityThreshold)
+            }
+        })
+    }
 
     static var allTests = [
         ("test_convertStringToFaceTemplate_succeeds", test_convertStringToFaceTemplate_succeeds),
@@ -84,5 +97,6 @@ final class FaceTemplateUtilityTests: XCTestCase {
         ("test_compareDifferentUsers_returnsLowScore", test_compareDifferentUsers_returnsLowScore),
         ("test_getTemplateNorms_equalsOne", test_getTemplateNorms_equalsOne),
         ("test_getFakeTemplateNorms_doesNotEqualOne", test_getFakeTemplateNorms_doesNotEqualOne),
+        ("test_compareSameUserWithTemplateNorms_returnsHighScore", test_compareSameUserWithTemplateNorms_returnsHighScore),
     ]
 }

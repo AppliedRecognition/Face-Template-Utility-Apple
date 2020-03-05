@@ -3,6 +3,8 @@ import Foundation
 /// Utility for comparing and converting Ver-ID face templates
 public struct FaceTemplateUtility {
     
+    private static let standardDeviation: Float = 0.1786
+    
     // MARK: - Face template comparison
     
     /// Compare two face templates using unit norms
@@ -20,11 +22,7 @@ public struct FaceTemplateUtility {
     ///   - template2: Second face template
     /// - Since: 1.0.0
     public static func compareFaceTemplate(_ template1: [Float], to template2: [Float]) -> Float {
-        var sum: Float = 0
-        for i in 0..<min(template1.count, template2.count) {
-            sum += template1[i] * template2[i]
-        }
-        return max(0, sum)
+        return innerProduct(template1, template2) / standardDeviation
     }
     
     /// Compare two face templates using given norms
@@ -35,14 +33,22 @@ public struct FaceTemplateUtility {
     ///   - norm2: Second face template norm
     /// - Since: 1.0.0
     public static func compareFaceTemplate(_ template1: [Float], withNorm norm1: Float, to template2: [Float], withNorm norm2: Float) -> Float {
-        return compareFaceTemplate(template1, to: template2) / (norm1 * norm2)
+        return innerProduct(template1, template2) / (norm1 * norm2) / standardDeviation
     }
     
     /// Get norm for face template
     /// - Parameter template: Face template
     /// - Since: 1.0.0
     public static func normForTemplate(_ template: [Float]) -> Float {
-        return sqrtf(compareFaceTemplate(template, to: template))
+        return sqrtf(innerProduct(template, template))
+    }
+    
+    private static func innerProduct(_ template1: [Float], _ template2: [Float]) -> Float {
+        var sum: Float = 0
+        for i in 0..<min(template1.count, template2.count) {
+            sum += template1[i] * template2[i]
+        }
+        return sum
     }
     
     // MARK: - Face template conversion
