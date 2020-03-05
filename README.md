@@ -1,3 +1,5 @@
+![Swift](https://github.com/AppliedRecognition/Face-Template-Utlity-Apple/workflows/Swift/badge.svg?event=push)
+
 # Face Template Utility
 
 ### Utility for converting and comparing raw [Ver-ID](https://github.com/AppliedRecognition/Ver-ID-UI-iOS) face templates
