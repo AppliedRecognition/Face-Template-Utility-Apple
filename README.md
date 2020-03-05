@@ -14,15 +14,23 @@
     
     func rawFaceTemplateFromImage(url: URL) -> [Float]? {
         let verid = VerIDFactory().createVerIDSync()
-        guard let face = (try? verid.faceDetection.detectRecognizableFacesInImage(url, limit: 1))?.first else {
+        guard let image = VerIDImage(url: url) else {
+            // Failed to create image from URL
+            return nil
+        }
+        guard let faces = try? verid.faceDetection.detectFacesInImage(image, limit: 1), !faces.isEmpty else {
             // No face found in image
             return nil
         }
         guard let faceRecognition = verid.faceRecognition as? VerIDFaceRecognition else {
-            // Not using Ver-ID face recognition
+            // Using face recognition implementation that does not support extracting raw face templates
             return nil
         }
-        guard let template = try? faceRecognition.rawFaceTemplate(fromFace: face) else {
+        guard let recognizableFace = (try? faceRecognition.createRecognizableFacesFromFaces(faces, inImage: image))?.first else {
+            // Failed to create recognizable face
+            return nil
+        }
+        guard let template = try? faceRecognition.rawFaceTemplate(fromFace: recognizableFace) else {
             // Failed to get raw template
             return nil
         }
