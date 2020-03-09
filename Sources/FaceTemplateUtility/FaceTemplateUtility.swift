@@ -5,11 +5,11 @@ import Foundation
 public class FaceTemplateUtility {
     
     /// Default standard deviation value to use at comparison
-    /// - Since: 1.1.0
+    /// - Since: 2.1.0
     public static let defaultStandardDeviation: Float = 0.1786
     
     /// Standard deviation used when comparing face templates
-    /// - Since: 1.1.0
+    /// - Since: 2.1.0
     private(set) public var standardDeviation: Float = FaceTemplateUtility.defaultStandardDeviation
     private var norm: Float?
     
@@ -21,27 +21,27 @@ public class FaceTemplateUtility {
     // MARK: - Setup
     
     /// Initialize an instance with default settings
-    /// - Since: 1.1.0
+    /// - Since: 2.1.0
     public static var `default`: FaceTemplateUtility {
         return FaceTemplateUtility()
     }
     
     /// Initialize an instance with unit norm (1)
-    /// - Since: 1.1.0
+    /// - Since: 2.1.0
     public static var withUnitNorm: FaceTemplateUtility {
         return FaceTemplateUtility(standardDeviation: nil, norm: 1)
     }
     
     /// Initialize an instance with given standard deviation to use when comparing face templates
     /// - Parameter standardDeviation: Standard deviation
-    /// - Since: 1.1.0
+    /// - Since: 2.1.0
     public static func withStandardDeviation(_ standardDeviation: Float) -> FaceTemplateUtility {
         return FaceTemplateUtility(standardDeviation: standardDeviation)
     }
     
     /// Set standard deviation on an instance and return the instance
     /// - Parameter standardDeviation: Standard deviation
-    /// - Since: 1.1.0
+    /// - Since: 2.1.0
     public func setStandardDeviation(_ standardDeviation: Float) -> FaceTemplateUtility {
         self.standardDeviation = standardDeviation
         return self
@@ -92,7 +92,7 @@ public class FaceTemplateUtility {
     ///   - template1: First face template
     ///   - template2: Second face template
     /// - Returns: Score that indicates similarity between the two templates
-    /// - Since: 1.1.0
+    /// - Since: 2.1.0
     public func compareFaceTemplate(_ template1: FaceTemplateConvertible, to template2: FaceTemplateConvertible) throws -> Float {
         let t1 = try template1.faceTemplate()
         let t2 = try template2.faceTemplate()
@@ -105,7 +105,7 @@ public class FaceTemplateUtility {
     ///   - template1: First face template
     ///   - template2: Second face template
     /// - Returns: Score that indicates similarity between the two templates
-    /// - Since: 1.1.0
+    /// - Since: 2.1.0
     public func compareFaceTemplate(_ template1: [Float], to template2: [Float]) -> Float {
         let norm1 = self.norm ?? self.normForFaceTemplate(template1)
         let norm2 = self.norm ?? self.normForFaceTemplate(template2)
@@ -114,7 +114,7 @@ public class FaceTemplateUtility {
     
     /// Get a norm for the specified face template
     /// - Parameter template: Face template
-    /// - Since: 1.1.0
+    /// - Since: 2.1.0
     public func normForFaceTemplate(_ template: FaceTemplateConvertible) throws -> Float {
         let t = try template.faceTemplate()
         return sqrtf(innerProduct(t, t))
@@ -122,7 +122,7 @@ public class FaceTemplateUtility {
     
     /// Get a norm for the specified face template
     /// - Parameter template: Face template
-    /// - Since: 1.1.0
+    /// - Since: 2.1.0
     public func normForFaceTemplate(_ faceTemplate: [Float]) -> Float {
         return sqrtf(self.innerProduct(faceTemplate, faceTemplate))
     }
@@ -138,7 +138,7 @@ public class FaceTemplateUtility {
     // MARK: - Face template conversion
     
     /// Convert face template to string
-    /// - Note: As of version 1.1.0 the framework contains a `String` extension that conforms to `FaceTemplateEncodable`, making this function redundant.
+    /// - Note: As of version 2.1.0 the framework contains a `String` extension that conforms to `FaceTemplateEncodable`, making this function redundant.
     /// - Parameter template: Face template to be converted
     /// - Since: 1.0.0
     public static func stringFromFaceTemplate(_ template: [Float]) -> String {
@@ -146,7 +146,7 @@ public class FaceTemplateUtility {
     }
     
     /// Convert string to face template
-    /// - Note: As of version 1.1.0 the framework contains a `String` extension that conforms to `FaceTemplateDecodable`, making this function redundant.
+    /// - Note: As of version 2.1.0 the framework contains a `String` extension that conforms to `FaceTemplateDecodable`, making this function redundant.
     /// - Parameter string: String representing base 64 encoded face template
     /// - Since: 1.0.0
     public static func faceTemplateFromString(_ string: String) throws -> [Float] {

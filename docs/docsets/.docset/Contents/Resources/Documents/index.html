@@ -46,6 +46,9 @@
             <a href="Extensions.html">Extensions</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
+                <a href="Extensions/Array.html">Array</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="Extensions/Data.html">Data</a>
               </li>
               <li class="nav-group-task">
@@ -129,7 +132,7 @@
 <p>The framework already contains extensions to <code>String</code> and <code>Data</code> that conform to the <code><a href="Protocols/FaceTemplateConvertible.html">FaceTemplateConvertible</a></code> protocol.</p>
 
 <ol>
-<li><p>Create a class that conforms to the <code><a href="Protocols/FaceTemplateConvertible.html">FaceTemplateConvertible</a></code> protocol:</p>
+<li><p>Create a class that conforms to the <code><a href="Protocols/FaceTemplateConvertible.html">FaceTemplateConvertible</a></code> protocol. In this example the template will be encoded in JSON:</p>
 <pre class="highlight swift"><code><span class="kd">import</span> <span class="kt">FaceTemplateUtility</span>
 
 <span class="kd">class</span> <span class="kt">MyFaceTemplateClass</span><span class="p">:</span> <span class="kt">FaceTemplateConvertible</span> <span class="p">{</span>
@@ -140,13 +143,11 @@
         <span class="k">self</span><span class="o">.</span><span class="n">encodedTemplate</span> <span class="o">=</span> <span class="n">encodedTemplate</span>
     <span class="p">}</span>
 
-    <span class="c1">// MARK: - FaceTemplateEncodable</span>
+    <span class="c1">// MARK: - FaceTemplateConvertible</span>
 
     <span class="kd">required</span> <span class="kd">public</span> <span class="nf">init</span><span class="p">(</span><span class="n">from</span> <span class="nv">faceTemplate</span><span class="p">:</span> <span class="p">[</span><span class="kt">Float</span><span class="p">])</span> <span class="k">throws</span> <span class="p">{</span>
         <span class="k">self</span><span class="o">.</span><span class="n">encodedTemplate</span> <span class="o">=</span> <span class="k">try</span> <span class="kt">JSONEncoder</span><span class="p">()</span><span class="o">.</span><span class="nf">encode</span><span class="p">(</span><span class="n">faceTemplate</span><span class="p">)</span>
     <span class="p">}</span>
-
-    <span class="c1">// MARK: - FaceTemplateDecodable</span>
 
     <span class="kd">public</span> <span class="kd">func</span> <span class="nf">faceTemplate</span><span class="p">()</span> <span class="k">throws</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="kt">Float</span><span class="p">]</span> <span class="p">{</span>
         <span class="k">return</span> <span class="k">try</span> <span class="kt">JSONDecoder</span><span class="p">()</span><span class="o">.</span><span class="nf">decode</span><span class="p">([</span><span class="kt">Float</span><span class="p">]</span><span class="o">.</span><span class="k">self</span><span class="p">,</span> <span class="nv">from</span><span class="p">:</span> <span class="k">self</span><span class="o">.</span><span class="n">encodedTemplate</span><span class="p">)</span>
@@ -155,7 +156,7 @@
 </code></pre></li>
 <li><p>Use an instance of the class when comparing face templates:</p>
 <pre class="highlight swift"><code><span class="k">let</span> <span class="nv">templateJSON1</span><span class="p">:</span> <span class="kt">Data</span> <span class="c1">// Template 1</span>
-<span class="k">let</span> <span class="nv">templateJSON2</span><span class="p">:</span> <span class="kt">Data</span> <span class="c1">// Template 1</span>
+<span class="k">let</span> <span class="nv">templateJSON2</span><span class="p">:</span> <span class="kt">Data</span> <span class="c1">// Template 2</span>
 <span class="k">let</span> <span class="nv">template1</span> <span class="o">=</span> <span class="kt">MyFaceTemplateClass</span><span class="p">(</span><span class="nv">encodedTemplate</span><span class="p">:</span> <span class="n">templateJSON1</span><span class="p">)</span>
 <span class="k">let</span> <span class="nv">template2</span> <span class="o">=</span> <span class="kt">MyFaceTemplateClass</span><span class="p">(</span><span class="nv">encodedTemplate</span><span class="p">:</span> <span class="n">templateJSON2</span><span class="p">)</span>
 <span class="k">let</span> <span class="nv">score</span> <span class="o">=</span> <span class="k">try</span> <span class="kt">FaceTemplateUtility</span><span class="o">.</span><span class="k">default</span><span class="o">.</span><span class="nf">compareFaceTemplate</span><span class="p">(</span><span class="n">template1</span><span class="p">,</span> <span class="nv">to</span><span class="p">:</span> <span class="n">template2</span><span class="p">)</span>

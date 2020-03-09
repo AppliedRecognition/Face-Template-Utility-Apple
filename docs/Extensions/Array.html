@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Data Extension Reference</title>
+    <title>Array Extension Reference</title>
     <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
     <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
     <meta charset='utf-8'>
@@ -10,8 +10,8 @@
     
   </head>
   <body>
-    <a name="//apple_ref/swift/Extension/Data" class="dashAnchor"></a>
-    <a title="Data Extension Reference"></a>
+    <a name="//apple_ref/swift/Extension/Array" class="dashAnchor"></a>
+    <a title="Array Extension Reference"></a>
     <header>
       <div class="content-wrapper">
         <p><a href="../index.html"> Docs</a> (100% documented)</p>
@@ -21,7 +21,7 @@
       <p id="breadcrumbs">
         <a href="../index.html"> Reference</a>
         <img id="carat" src="../img/carat.png" />
-        Data Extension Reference
+        Array Extension Reference
       </p>
     </div>
     <div class="content-wrapper">
@@ -70,15 +70,19 @@
       <article class="main-content">
         <section>
           <section class="section">
-            <h1>Data</h1>
+            <h1>Array</h1>
               <div class="declaration">
                 <div class="language">
-                  <pre class="highlight swift"><code><span class="kd">extension</span> <span class="kt">Data</span><span class="p">:</span> <span class="kt"><a href="../Protocols/FaceTemplateConvertible.html">FaceTemplateConvertible</a></span></code></pre>
+                  <pre class="highlight swift"><code><span class="kd">extension</span> <span class="kt">Array</span><span class="p">:</span> <span class="kt"><a href="../Protocols/FaceTemplateConvertible.html">FaceTemplateConvertible</a></span> <span class="k">where</span> <span class="kt">Element</span> <span class="o">==</span> <span class="kt">NSNumber</span></code></pre>
 
                 </div>
               </div>
-            <p>Makes <code>Data</code> convertible to a face template</p>
-<div class="aside aside-since">
+            <p>Makes <code>[NSNumber]</code> convertible to a face template</p>
+<div class="aside aside-note">
+    <p class="aside-title">Note</p>
+    <code>[NSNumber]</code> is the raw face template type returned by the Ver-ID SDK
+
+</div><div class="aside aside-since">
     <p class="aside-title">Since</p>
     2.1.0
 
@@ -87,13 +91,22 @@
           </section>
           <section class="section task-group-section">
             <div class="task-group">
+              <div class="task-name-container">
+                <a name="/Available%20where%20%60Element%60%20==%20%60NSNumber%60"></a>
+                <a name="//apple_ref/swift/Section/Available where `Element` == `NSNumber`" class="dashAnchor"></a>
+                <div class="section-name-container">
+                  <a class="section-name-link" href="#/Available%20where%20%60Element%60%20==%20%60NSNumber%60"></a>
+                  <h3 class="section-name"><p>Available where <code>Element</code> == <code>NSNumber</code></p>
+</h3>
+                </div>
+              </div>
               <ul>
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:10Foundation4DataV19FaceTemplateUtilityE4fromACSaySfG_tKcfc"></a>
+                    <a name="/s:Sa19FaceTemplateUtilitySo8NSNumberCRszlE4fromSayACGSaySfG_tKcfc"></a>
                     <a name="//apple_ref/swift/Method/init(from:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:10Foundation4DataV19FaceTemplateUtilityE4fromACSaySfG_tKcfc">init(from:)</a>
+                    <a class="token" href="#/s:Sa19FaceTemplateUtilitySo8NSNumberCRszlE4fromSayACGSaySfG_tKcfc">init(from:)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -101,7 +114,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Initialize <code>Data</code> from a face template</p>
+                        <p>Initialize <code>[NSNumber]</code> from a face template</p>
 <div class="aside aside-since">
     <p class="aside-title">Since</p>
     2.1.0
@@ -142,9 +155,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:10Foundation4DataV19FaceTemplateUtilityE04faceD0SaySfGyKF"></a>
+                    <a name="/s:Sa19FaceTemplateUtilitySo8NSNumberCRszlE04faceB0SaySfGyKF"></a>
                     <a name="//apple_ref/swift/Method/faceTemplate()" class="dashAnchor"></a>
-                    <a class="token" href="#/s:10Foundation4DataV19FaceTemplateUtilityE04faceD0SaySfGyKF">faceTemplate()</a>
+                    <a class="token" href="#/s:Sa19FaceTemplateUtilitySo8NSNumberCRszlE04faceB0SaySfGyKF">faceTemplate()</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -152,7 +165,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Convert this <code>Data</code> to a face template</p>
+                        <p>Convert this <code>[NSNumber]</code> to a face template</p>
 <div class="aside aside-since">
     <p class="aside-title">Since</p>
     2.1.0

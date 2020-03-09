@@ -8,12 +8,12 @@
 import Foundation
 
 /// Makes `Data` convertible to a face template
-/// - Since: 1.1.0
+/// - Since: 2.1.0
 extension Data: FaceTemplateConvertible {
     
     /// Initialize `Data` from a face template
     /// - Parameter faceTemplate: Face template
-    /// - Since: 1.1.0
+    /// - Since: 2.1.0
     public init(from faceTemplate: [Float]) throws {
         let floats: [CFSwappedFloat32] = faceTemplate.map({ CFConvertFloat32HostToSwapped($0) })
         var bytes: [UInt8] = []
@@ -25,7 +25,7 @@ extension Data: FaceTemplateConvertible {
     }
     
     /// Convert this `Data` to a face template
-    /// - Since: 1.1.0
+    /// - Since: 2.1.0
     public func faceTemplate() throws -> [Float] {
         let bytes = [UInt8](self)
         var floats: [Float] = []
