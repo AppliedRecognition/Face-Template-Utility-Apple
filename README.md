@@ -40,7 +40,6 @@
     ~~~
 
 ## Converting face templates to strings
-
 If you're going to be storing raw face templates you may want to convert them to strings.
 
 1. Convert face template to string:
@@ -48,20 +47,58 @@ If you're going to be storing raw face templates you may want to convert them to
     ~~~swift
     import FaceTemplateUtility
     
-    let string: String = FaceTemplateUtility.stringFromFaceTemplate(template)
+    let faceTemplate: [Float] // Raw face template
+    let string: String = try String(from: faceTemplate)
     ~~~
 2. Convert string to face template:
 
     ~~~swift
     import FaceTemplateUtility
     
-    do {
-        let faceTemplate: [Float] = try FaceTemplateUtility.faceTemplateFromString(string)
-    } catch {
-        // Conversion failed
-    }
+    let string: String // Face template converted to string
+    let faceTemplate: [Float] = try string.faceTemplate()
     ~~~
     
+## Custom face template types
+You can encode and decode face templates to your own type by conforming to the `FaceTemplateConvertible` protocol.
+
+The framework already contains extensions to `String` and `Data` that conform to the `FaceTemplateConvertible` protocol.
+
+1. Create a class that conforms to the `FaceTemplateConvertible` protocol. In this example the template will be encoded in JSON:
+
+    ~~~swift
+    import FaceTemplateUtility
+    
+    class MyFaceTemplateClass: FaceTemplateConvertible {
+
+        let encodedTemplate: Data
+        
+        public init(encodedTemplate: Data) {
+            self.encodedTemplate = encodedTemplate
+        }
+        
+        // MARK: - FaceTemplateConvertible
+        
+        required public init(from faceTemplate: [Float]) throws {
+            self.encodedTemplate = try JSONEncoder().encode(faceTemplate)
+        }
+        
+        public func faceTemplate() throws -> [Float] {
+            return try JSONDecoder().decode([Float].self, from: self.encodedTemplate)
+        }
+    }
+    ~~~
+
+2. Use an instance of the class when comparing face templates:
+
+    ~~~swift
+    let templateJSON1: Data // Template 1
+    let templateJSON2: Data // Template 2
+    let template1 = MyFaceTemplateClass(encodedTemplate: templateJSON1)
+    let template2 = MyFaceTemplateClass(encodedTemplate: templateJSON2)
+    let score = try FaceTemplateUtility.default.compareFaceTemplate(template1, to: template2)
+    ~~~
+
 ## Comparing face templates
 
 ~~~swift
@@ -69,7 +106,7 @@ import FaceTemplateUtility
 
 func isFaceTemplate(_ template1: [Float], similarTo template2: [Float]) -> Bool {
     let threshold: Float = 4.0
-    let score: Float = FaceTemplateUtility.compareFaceTemplate(template1, to: template2)
+    let score: Float = FaceTemplateUtility.default.compareFaceTemplate(template1, to: template2)
     return score > threshold
 }
 ~~~

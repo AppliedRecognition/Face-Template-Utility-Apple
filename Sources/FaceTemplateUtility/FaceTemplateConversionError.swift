@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  FaceTemplateConversionError.swift
 //  
 //
 //  Created by Jakub Dolejs on 05/03/2020.

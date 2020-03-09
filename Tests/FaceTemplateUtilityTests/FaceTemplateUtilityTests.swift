@@ -16,32 +16,119 @@ final class FaceTemplateUtilityTests: XCTestCase {
     
     let similarityThreshold: Float = 4.0
     
+    // MARK: - Setup tests
+    
+    func test_createWithStandardDeviation_succeeds() {
+        let deviation: Float = 2.0
+        XCTAssertEqual(deviation, FaceTemplateUtility.withStandardDeviation(deviation).standardDeviation)
+    }
+    
+    func test_setStandardDeviation_succeeds() {
+        let deviation: Float = 2.0
+        XCTAssertEqual(deviation, FaceTemplateUtility.default.setStandardDeviation(deviation).standardDeviation)
+    }
+    
     // MARK: - Face template conversion tests
     
     func test_convertStringToFaceTemplate_succeeds() {
         XCTAssertNoThrow(try userFaceTemplates.forEach({
             try $0.forEach({
-                let template = try FaceTemplateUtility.faceTemplateFromString($0.0)
+                let template = try $0.0.faceTemplate()
                 XCTAssertEqual(template, $0.1)
             })
         }))
     }
     
     func test_convertInvalidStringToFaceTemplate_fails() {
-        XCTAssertThrowsError(try FaceTemplateUtility.faceTemplateFromString("$nonsense"))
+        XCTAssertThrowsError(try "$nonsense".faceTemplate())
     }
     
     func test_convertFaceTemplateToString_succeeds() {
-        userFaceTemplates.forEach({
-            $0.forEach({
-                XCTAssertEqual(FaceTemplateUtility.stringFromFaceTemplate($0.1), $0.0)
+        XCTAssertNoThrow(try userFaceTemplates.forEach({
+            try $0.forEach({
+                XCTAssertEqual(try String(from: $0.1), $0.0)
             })
-        })
+        }))
+    }
+    
+    func test_convertNSNumberArrayToFaceTemplate_succeeds() {
+        XCTAssertNoThrow(try userFaceTemplates.forEach({
+            try $0.forEach({
+                let template = $0.1.map({NSNumber(value: $0)})
+                XCTAssertEqual(try template.faceTemplate(), $0.1)
+            })
+        }))
+    }
+    
+    func test_convertFaceTemplateToNSNumberArray_succeeds() {
+        XCTAssertNoThrow(try userFaceTemplates.forEach({
+            try $0.forEach({
+                let template = $0.1
+                _ = try [NSNumber](from: template)
+            })
+        }))
     }
     
     // MARK: - Face template comparison tests
     
     func test_compareSameUser_returnsHighScore() {
+        userFaceTemplates.forEach({
+            for i in 0..<$0.count-1 {
+                let score = FaceTemplateUtility.default.compareFaceTemplate($0[i].1, to: $0[i+1].1)
+                XCTAssertGreaterThanOrEqual(score, self.similarityThreshold)
+            }
+        })
+    }
+    
+    func test_compareDifferentUsers_returnsLowScore() {
+        for i in 0..<userFaceTemplates.count-1 {
+            let user1Templates = userFaceTemplates[i]
+            let user2Templates = userFaceTemplates[i+1]
+            user1Templates.forEach({ template1 in
+                user2Templates.forEach({ template2 in
+                    let score = FaceTemplateUtility.default.compareFaceTemplate(template1.1, to: template2.1)
+                    XCTAssertLessThan(score, self.similarityThreshold)
+                })
+            })
+        }
+    }
+    
+    func test_getTemplateNorms_equalsOne() {
+        userFaceTemplates.forEach({
+            $0.forEach({
+                let norm = FaceTemplateUtility.default.normForFaceTemplate($0.1)
+                XCTAssertEqual(norm, 1, accuracy: 0.0001)
+            })
+        })
+    }
+    
+    func test_getStringTemplateNorms_equalsOne() {
+        XCTAssertNoThrow(try userFaceTemplates.forEach({
+            try $0.forEach({
+                let norm = try FaceTemplateUtility.default.normForFaceTemplate($0.0)
+                XCTAssertEqual(norm, 1, accuracy: 0.0001)
+            })
+        }))
+    }
+    
+    func test_getFakeTemplateNorms_doesNotEqualOne() {
+        let template: [Float] = [0.1,1,0,0.4,0.6,0.9]
+        let norm = FaceTemplateUtility.default.normForFaceTemplate(template)
+        XCTAssertNotEqual(1, norm, accuracy: 0.0001)
+    }
+    
+    func test_compareSameUserWithUnitNorms_returnsHighScore() {
+        userFaceTemplates.forEach({
+            for i in 0..<$0.count-1 {
+                let score = FaceTemplateUtility.withUnitNorm.compareFaceTemplate($0[i].1, to: $0[i+1].1)
+                XCTAssertGreaterThanOrEqual(score, self.similarityThreshold)
+            }
+        })
+    }
+    
+    // MARK: - Older static API
+    
+    func test_staticCompareSameUser_returnsHighScore() {
         userFaceTemplates.forEach({
             for i in 0..<$0.count-1 {
                 let score = FaceTemplateUtility.compareFaceTemplate($0[i].1, to: $0[i+1].1)
@@ -50,7 +137,7 @@ final class FaceTemplateUtilityTests: XCTestCase {
         })
     }
     
-    func test_compareDifferentUsers_returnsLowScore() {
+    func test_staticCompareDifferentUsers_returnsLowScore() {
         for i in 0..<userFaceTemplates.count-1 {
             let user1Templates = userFaceTemplates[i]
             let user2Templates = userFaceTemplates[i+1]
@@ -63,40 +150,65 @@ final class FaceTemplateUtilityTests: XCTestCase {
         }
     }
     
-    func test_getTemplateNorms_equalsOne() {
+    func test_staticCompareSameUserStrings_returnsHighScore() {
+        XCTAssertNoThrow(try userFaceTemplates.forEach({
+            for i in 0..<$0.count-1 {
+                let score = try FaceTemplateUtility.compareFaceTemplate($0[i].0, to: $0[i+1].0)
+                XCTAssertGreaterThanOrEqual(score, self.similarityThreshold)
+            }
+        }))
+    }
+    
+    func test_staticCompareSameUsersWithNorms_returnsHighScore() {
+        XCTAssertNoThrow(userFaceTemplates.forEach({
+            for i in 0..<$0.count-1 {
+                let score = FaceTemplateUtility.compareFaceTemplate($0[i].1, withNorm: 1, to: $0[i+1].1, withNorm: 1)
+                XCTAssertGreaterThanOrEqual(score, self.similarityThreshold)
+            }
+        }))
+    }
+    
+    func test_staticNormForTemplate_retunrnsOne() {
         userFaceTemplates.forEach({
-            $0.forEach({
+            $0.forEach {
                 let norm = FaceTemplateUtility.normForTemplate($0.1)
                 XCTAssertEqual(norm, 1, accuracy: 0.0001)
-            })
+            }
         })
     }
     
-    func test_getFakeTemplateNorms_doesNotEqualOne() {
-        let template: [Float] = [0.1,1,0,0.4,0.6,0.9]
-        let norm = FaceTemplateUtility.normForTemplate(template)
-        XCTAssertNotEqual(1, norm, accuracy: 0.0001)
+    func test_staticConvertInvalidStringToFaceTemplate_fails() {
+        XCTAssertThrowsError(try FaceTemplateUtility.faceTemplateFromString("$nonsense"))
     }
     
-    func test_compareSameUserWithTemplateNorms_returnsHighScore() {
+    func test_staticConvertFaceTemplateToString_succeeds() {
         userFaceTemplates.forEach({
-            for i in 0..<$0.count-1 {
-                let norm1 = FaceTemplateUtility.normForTemplate($0[i].1)
-                let norm2 = FaceTemplateUtility.normForTemplate($0[i+1].1)
-                let score = FaceTemplateUtility.compareFaceTemplate($0[i].1, withNorm: norm1, to: $0[i+1].1, withNorm: norm2)
-                XCTAssertGreaterThanOrEqual(score, self.similarityThreshold)
-            }
+            $0.forEach({
+                XCTAssertEqual(FaceTemplateUtility.stringFromFaceTemplate($0.1), $0.0)
+            })
         })
     }
 
     static var allTests = [
+        ("test_createWithStandardDeviation_succeeds", test_createWithStandardDeviation_succeeds),
+        ("test_setStandardDeviation_succeeds", test_setStandardDeviation_succeeds),
         ("test_convertStringToFaceTemplate_succeeds", test_convertStringToFaceTemplate_succeeds),
         ("test_convertInvalidStringToFaceTemplate_fails", test_convertInvalidStringToFaceTemplate_fails),
         ("test_convertFaceTemplateToString_succeeds", test_convertFaceTemplateToString_succeeds),
         ("test_compareSameUser_returnsHighScore", test_compareSameUser_returnsHighScore),
         ("test_compareDifferentUsers_returnsLowScore", test_compareDifferentUsers_returnsLowScore),
         ("test_getTemplateNorms_equalsOne", test_getTemplateNorms_equalsOne),
+        ("test_getStringTemplateNorms_equalsOne", test_getStringTemplateNorms_equalsOne),
         ("test_getFakeTemplateNorms_doesNotEqualOne", test_getFakeTemplateNorms_doesNotEqualOne),
-        ("test_compareSameUserWithTemplateNorms_returnsHighScore", test_compareSameUserWithTemplateNorms_returnsHighScore),
+        ("test_compareSameUserWithUnitNorms_returnsHighScore", test_compareSameUserWithUnitNorms_returnsHighScore),
+        ("test_staticCompareSameUser_returnsHighScore", test_staticCompareSameUser_returnsHighScore),
+        ("test_staticCompareDifferentUsers_returnsLowScore", test_staticCompareDifferentUsers_returnsLowScore),
+        ("test_staticConvertInvalidStringToFaceTemplate_fails", test_staticConvertInvalidStringToFaceTemplate_fails),
+        ("test_staticConvertFaceTemplateToString_succeeds", test_staticConvertFaceTemplateToString_succeeds),
+        ("test_staticCompareSameUserStrings_returnsHighScore", test_staticCompareSameUserStrings_returnsHighScore),
+        ("test_staticCompareSameUsersWithNorms_returnsHighScore", test_staticCompareSameUsersWithNorms_returnsHighScore),
+        ("test_staticNormForTemplate_retunrnsOne", test_staticNormForTemplate_retunrnsOne),
+        ("test_convertNSNumberArrayToFaceTemplate_succeeds", test_convertNSNumberArrayToFaceTemplate_succeeds),
+        ("test_convertFaceTemplateToNSNumberArray_succeeds", test_convertFaceTemplateToNSNumberArray_succeeds)
     ]
 }
